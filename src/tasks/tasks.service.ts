@@ -4,12 +4,14 @@ import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { User } from 'src/users/user.entity';
 import { TaskDto } from './dto/task.dto';
 import { Task } from './task.entity';
+import TasksSearchService from './tasksSearch.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @Inject('TasksRepository')
     private readonly tasksRepository: typeof Task,
+    private tasksSearchService: TasksSearchService,
   ) {}
 
   async findAll() {
@@ -34,7 +36,23 @@ export class TasksService {
     task.userId = userId;
     task.name = createTaskDto.name;
     task.description = createTaskDto.description;
-    return task.save();
+    await task.save();
+    this.tasksSearchService.indexTask(task);
+    return task;
+  }
+
+  async searchForTasks(text: string) {
+    const results = await this.tasksSearchService.search(text);
+    const ids = results.map((result) => result.id);
+    if (!ids.length) {
+      return [];
+    }
+    return this.tasksRepository.findAll<Task>({
+      include: [User],
+      where: {
+        id: ids,
+      },
+    });
   }
 
   private async getUserTask(id: number, userId: string) {
@@ -56,12 +74,14 @@ export class TasksService {
     task.name = updateTaskDto.name || task.name;
     task.description = updateTaskDto.description || task.description;
     task.isDone = updateTaskDto.isDone;
-    return task.save();
+    await task.save();
+    await this.tasksSearchService.update(task);
+    return task;
   }
 
   async delete(id: number, userId: string) {
     const task = await this.getUserTask(id, userId);
     await task.destroy();
-    return task;
+    await this.tasksSearchService.remove(id);
   }
 }
