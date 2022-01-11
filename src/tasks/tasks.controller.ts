@@ -11,6 +11,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -32,6 +33,14 @@ export class TaskController {
   @Get()
   @ApiOkResponse({ type: [TaskDto] })
   findAll(): Promise<TaskDto[]> {
+    return this.tasksService.findAll();
+  }
+
+  @Get('search')
+  searchForTasks(@Query('search') search: string) {
+    if (search) {
+      return this.tasksService.searchForTasks(search);
+    }
     return this.tasksService.findAll();
   }
 
@@ -74,7 +83,7 @@ export class TaskController {
   delete(
     @Param('id', new ParseIntPipe()) id: number,
     @Req() request,
-  ): Promise<TaskEntity> {
+  ): Promise<void> {
     return this.tasksService.delete(id, request.user.id);
   }
 }
