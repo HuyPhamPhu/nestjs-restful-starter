@@ -4,10 +4,14 @@ import { User } from '../user.entity';
 
 export class UserLoginResponseDto extends UserDto {
   @ApiProperty()
-  token: string;
+  accessToken: string;
 
-  constructor(user: User, token?: string) {
+  @ApiProperty()
+  refreshToken: string;
+
+  constructor(user: User, accessToken?: string, refreshToken?: string) {
     super(user);
-    this.token = token;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 }

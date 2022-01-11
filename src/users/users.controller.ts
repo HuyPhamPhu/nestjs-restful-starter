@@ -9,6 +9,7 @@ import {
   Req,
   UseGuards,
   Put,
+  HttpStatus,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
@@ -24,6 +25,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('register')
+  @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({ type: UserLoginResponseDto })
   register(
     @Body() createUserDto: CreateUserDto,
@@ -32,12 +34,29 @@ export class UsersController {
   }
 
   @Post('login')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: UserLoginResponseDto })
   login(
     @Body() userLoginRequestDto: UserLoginRequestDto,
   ): Promise<UserLoginResponseDto> {
     return this.usersService.login(userLoginRequestDto);
+  }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(HttpStatus.OK)
+  logout(@Req() request) {
+    return this.usersService.logout(request.user.id);
+  }
+
+  @Post('refresh')
+  @UseGuards(AuthGuard('rt'))
+  @HttpCode(HttpStatus.OK)
+  refreshTokens(@Req() request) {
+    return this.usersService.refreshTokens(
+      request.user.id,
+      request.user.refreshToken,
+    );
   }
 
   @Get()

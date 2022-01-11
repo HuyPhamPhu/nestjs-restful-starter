@@ -5,6 +5,7 @@ import { SharedModule } from './shared/shared.module';
 import { PostsModule } from './posts/posts.module';
 import { UploadModule } from './upload/upload.module';
 import { SearchModule } from './search/search.module';
+import { SocketInsideModule } from './socket-inside/socket-inside.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { SearchModule } from './search/search.module';
     SharedModule,
     UploadModule,
     SearchModule,
+    SocketInsideModule,
   ],
   controllers: [],
   providers: [],
