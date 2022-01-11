@@ -45,6 +45,27 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Generate CRUD
+
+```bash
+$ nest g resource {table}
+
+# example
+$ nest g resource cats
+
+> ? What transport layer do you use? REST API
+> ? Would you like to generate CRUD entry points? Yes
+> CREATE src/cats/cats.controller.spec.ts (556 bytes)
+> CREATE src/cats/cats.controller.ts (873 bytes)
+> CREATE src/cats/cats.module.ts (240 bytes)
+> CREATE src/cats/cats.service.spec.ts (446 bytes)
+> CREATE src/cats/cats.service.ts (595 bytes)
+> CREATE src/cats/dto/create-cat.dto.ts (29 bytes)
+> CREATE src/cats/dto/update-cat.dto.ts (160 bytes)
+> CREATE src/cats/entities/cat.entity.ts (20 bytes)
+> UPDATE src/app.module.ts (749 bytes)
+```
+
 ## Test
 
 ```bash
