@@ -8,6 +8,9 @@ export class ConfigService {
   }
 
   get jwtConfig() {
-    return { privateKey: config.jwtPrivateKey };
+    return {
+      privateKey: config.jwtPrivateKey,
+      privateKeyRefresh: config.jwtPrivateKeyRefresh,
+    };
   }
 }

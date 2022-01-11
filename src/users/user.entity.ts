@@ -57,6 +57,9 @@ export class User extends Model<User> {
   @Column({ field: 'deleted_at' })
   deletedAt: Date;
 
+  @Column({ field: 'refresh_token' })
+  refreshToken: string;
+
   @HasMany(() => Post)
   posts: Post[];
 

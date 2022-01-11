@@ -13,6 +13,7 @@ import { ConfigService } from './../shared/config/config.service';
 @Injectable()
 export class UsersService {
   private readonly jwtPrivateKey: string;
+  private readonly jwtPrivateKeyRefresh: string;
 
   constructor(
     @Inject('UsersRepository')
@@ -20,6 +21,7 @@ export class UsersService {
     private readonly configService: ConfigService,
   ) {
     this.jwtPrivateKey = this.configService.jwtConfig.privateKey;
+    this.jwtPrivateKeyRefresh = this.configService.jwtConfig.privateKeyRefresh;
   }
 
   async findAll() {
@@ -59,8 +61,10 @@ export class UsersService {
       const userData = await user.save();
 
       // when registering then log user in automatically by returning a token
-      const token = await this.signToken(userData);
-      return new UserLoginResponseDto(userData, token);
+      const accessToken = await this.signToken(user);
+      const refreshToken = await this.refreshToken(user);
+      await this.updateRefreshToken(refreshToken, user.id);
+      return new UserLoginResponseDto(userData, accessToken, refreshToken);
     } catch (err) {
       if (err.original.constraint === 'user_email_key') {
         throw new HttpException(
@@ -93,8 +97,17 @@ export class UsersService {
       );
     }
 
-    const token = await this.signToken(user);
-    return new UserLoginResponseDto(user, token);
+    const accessToken = await this.signToken(user);
+    const refreshToken = await this.refreshToken(user);
+    await this.updateRefreshToken(refreshToken, user.id);
+    return new UserLoginResponseDto(user, accessToken, refreshToken);
+  }
+
+  async logout(userId: string) {
+    await this.usersRepository.update(
+      { refreshToken: null },
+      { where: { id: userId } },
+    );
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -125,8 +138,43 @@ export class UsersService {
   async signToken(user: User) {
     const payload: JwtPayload = {
       email: user.email,
+      id: user.id,
     };
+    return sign(payload, this.jwtPrivateKey, { expiresIn: '1h' });
+  }
 
-    return sign(payload, this.jwtPrivateKey, {});
+  async refreshToken(user: User) {
+    const payload: JwtPayload = {
+      email: user.email,
+      id: user.id,
+    };
+    return sign(payload, this.jwtPrivateKeyRefresh, {});
+  }
+
+  async updateRefreshToken(refreshToken: string, userId: string) {
+    const salt = await genSalt(10);
+    const rt = await hash(refreshToken, salt);
+    await this.usersRepository.update(
+      { refreshToken: rt },
+      { where: { id: userId } },
+    );
+  }
+
+  async refreshTokens(userId: string, rt: string) {
+    const user = await this.usersRepository.findByPk<User>(userId);
+    if (!user || !user.refreshToken) {
+      throw new HttpException('Access Denied', HttpStatus.FORBIDDEN);
+    }
+    const isMatch = await compare(rt, user.refreshToken);
+
+    if (!isMatch) {
+      throw new HttpException('Access Denied', HttpStatus.FORBIDDEN);
+    }
+
+    const accessToken = await this.signToken(user);
+    const refreshToken = await this.refreshToken(user);
+    await this.updateRefreshToken(refreshToken, user.id);
+
+    return { accessToken, refreshToken };
   }
 }
