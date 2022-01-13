@@ -47,12 +47,13 @@ export class TasksService {
     if (!ids.length) {
       return [];
     }
-    return this.tasksRepository.findAll<Task>({
+    const tasks = await this.tasksRepository.findAll<Task>({
       include: [User],
       where: {
         id: ids,
       },
     });
+    return tasks.map((task) => new TaskDto(task));
   }
 
   private async getUserTask(id: number, userId: string) {
