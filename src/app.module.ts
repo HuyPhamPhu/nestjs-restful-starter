@@ -6,7 +6,7 @@ import { PostsModule } from './posts/posts.module';
 import { UploadModule } from './upload/upload.module';
 import { SearchModule } from './search/search.module';
 import { SocketInsideModule } from './socket-inside/socket-inside.module';
-
+import { ServeStaticModule } from '@nestjs/serve-static';
 @Module({
   imports: [
     TasksModule,
@@ -16,6 +16,10 @@ import { SocketInsideModule } from './socket-inside/socket-inside.module';
     UploadModule,
     SearchModule,
     SocketInsideModule,
+    ServeStaticModule.forRoot({
+      rootPath: 'images',
+      serveRoot: '/images',
+    }),
   ],
   controllers: [],
   providers: [],

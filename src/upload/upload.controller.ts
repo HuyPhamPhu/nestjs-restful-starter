@@ -27,6 +27,7 @@ import {
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { imageFileFilter } from './file-upload.utils';
+import { GlobalService } from 'src/utils/global.service';
 
 @Controller('upload')
 @ApiTags('upload')
@@ -38,7 +39,7 @@ export class UploadController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './files',
+        destination: GlobalService.rootPath,
         filename: (req, file, callback) => {
           const name = file.originalname.split('.')[0];
           const fileExtName = extname(file.originalname);
@@ -58,7 +59,7 @@ export class UploadController {
   @UseInterceptors(
     FilesInterceptor('image', 20, {
       storage: diskStorage({
-        destination: './files',
+        destination: GlobalService.rootPath,
         filename: (request, file, callback) => {
           const name = file.originalname.split('.')[0];
           const fileExtName = extname(file.originalname);
@@ -70,12 +71,6 @@ export class UploadController {
     }),
   )
   async uploadMultipleFiles(@UploadedFiles() files,@Req() request) {
-    console.log(files);
     return this.uploadService.uploadMultipleFiles(request.user.id, files);
-  }
-
-  @Get(':imgpath')
-  seeUploadedFile(@Param('imgpath') image, @Res() res) {
-    return res.sendFile(image, { root: './files' });
   }
 }

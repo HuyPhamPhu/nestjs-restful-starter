@@ -1,5 +1,5 @@
 export class GlobalService{ 
-    static rootPath = './files/'; 
+    static rootPath = 'images/'; 
     static uploadPrefix = 'upload-';
     static thumbnailsPrefix = 'thumbnails-';
     static thumbnailsImageWidth = 42;
