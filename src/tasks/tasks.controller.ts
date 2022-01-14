@@ -1,5 +1,4 @@
 import { CreateTaskDto } from './dto/create-task.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { TaskDto } from './dto/task.dto';
 import { TasksService } from './tasks.service';
 import {
@@ -24,6 +23,7 @@ import {
 } from '@nestjs/swagger';
 import { Task as TaskEntity } from './task.entity';
 import { UpdateTaskDto } from './dto/upadte-task.dto';
+import { AtGuard } from '../common/guards';
 
 @Controller('tasks')
 @ApiTags('tasks')
@@ -54,7 +54,7 @@ export class TaskController {
   @Post()
   @ApiCreatedResponse({ type: TaskEntity })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   create(
     @Body() createTaskDto: CreateTaskDto,
     @Req() request,
@@ -66,7 +66,7 @@ export class TaskController {
   @ApiOkResponse({ type: TaskEntity })
   @ApiParam({ name: 'id', required: true })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   update(
     @Param('id', new ParseIntPipe()) id: number,
     @Req() request,
@@ -79,7 +79,7 @@ export class TaskController {
   @ApiOkResponse({ type: TaskEntity })
   @ApiParam({ name: 'id', required: true })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   delete(
     @Param('id', new ParseIntPipe()) id: number,
     @Req() request,

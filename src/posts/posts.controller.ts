@@ -19,10 +19,10 @@ import {
 } from '@nestjs/swagger';
 import { CreatePostDto } from './dto/create-post.dto';
 import { PostsService } from './posts.service';
-import { AuthGuard } from '@nestjs/passport';
 import { Post as PostEntity } from './post.entity';
 import { PostDto } from './dto/post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { AtGuard } from '../common/guards';
 
 @Controller('posts')
 @ApiTags('posts')
@@ -45,7 +45,7 @@ export class PostsController {
   @Post()
   @ApiCreatedResponse({ type: PostEntity })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   create(
     @Body() createPostDto: CreatePostDto,
     @Req() request,
@@ -57,7 +57,7 @@ export class PostsController {
   @ApiOkResponse({ type: PostEntity })
   @ApiParam({ name: 'id', required: true })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   update(
     @Param('id', new ParseIntPipe()) id: number,
     @Req() request,
@@ -70,7 +70,7 @@ export class PostsController {
   @ApiOkResponse({ type: PostEntity })
   @ApiParam({ name: 'id', required: true })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   delete(
     @Param('id', new ParseIntPipe()) id: number,
     @Req() request,

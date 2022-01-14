@@ -132,7 +132,6 @@ export class UsersService {
   async delete(id: string) {
     const user = await this.usersRepository.findByPk<User>(id);
     await user.destroy();
-    return new UserDto(user);
   }
 
   async signToken(user: User) {
@@ -148,7 +147,7 @@ export class UsersService {
       email: user.email,
       id: user.id,
     };
-    return sign(payload, this.jwtPrivateKeyRefresh, {});
+    return sign(payload, this.jwtPrivateKeyRefresh, { expiresIn: '30d' });
   }
 
   async updateRefreshToken(refreshToken: string, userId: string) {

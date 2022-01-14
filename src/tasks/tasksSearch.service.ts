@@ -28,7 +28,7 @@ export default class TasksSearchService {
       index: this.index,
       body: {
         query: {
-          match: {
+          match_phrase: {
             name: text,
           },
         },
