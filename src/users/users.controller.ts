@@ -16,8 +16,8 @@ import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
 import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { UserLoginResponseDto } from './dto/user-login-response.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AtGuard, RtGuard } from '../common/guards';
 
 @Controller('users')
 @ApiTags('users')
@@ -43,14 +43,14 @@ export class UsersController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   @HttpCode(HttpStatus.OK)
   logout(@Req() request) {
     return this.usersService.logout(request.user.id);
   }
 
   @Post('refresh')
-  @UseGuards(AuthGuard('rt'))
+  @UseGuards(RtGuard)
   @HttpCode(HttpStatus.OK)
   refreshTokens(@Req() request) {
     return this.usersService.refreshTokens(
@@ -61,7 +61,7 @@ export class UsersController {
 
   @Get()
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   @ApiOkResponse({ type: [UserDto] })
   findAll(): Promise<UserDto[]> {
     return this.usersService.findAll();
@@ -69,7 +69,7 @@ export class UsersController {
 
   @Get('me')
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   @ApiOkResponse({ type: UserDto })
   async getUser(@Req() request): Promise<UserDto> {
     return this.usersService.getUser(request.user.id);
@@ -77,7 +77,7 @@ export class UsersController {
 
   @Put('me')
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   @ApiOkResponse({ type: UserDto })
   update(
     @Body() updateUserDto: UpdateUserDto,
@@ -88,9 +88,9 @@ export class UsersController {
 
   @Delete('me')
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AtGuard)
   @ApiOkResponse({ type: UserDto })
-  delete(@Req() request): Promise<UserDto> {
+  delete(@Req() request): Promise<void> {
     return this.usersService.delete(request.user.id);
   }
 }
