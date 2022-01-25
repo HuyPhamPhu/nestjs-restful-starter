@@ -1,7 +1,7 @@
 import { UpdateTaskDto } from './dto/upadte-task.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Inject, Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { TaskDto } from './dto/task.dto';
 import { Task } from './task.entity';
 import TasksSearchService from './tasksSearch.service';

@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { User } from './../users/user.entity';
 import { Post } from './../posts/post.entity';
 import { ConfigService } from './../shared/config/config.service';
-import { Task } from 'src/tasks/task.entity';
+import { Task } from '../tasks/task.entity';
 
 export const databaseProviders = [
   {

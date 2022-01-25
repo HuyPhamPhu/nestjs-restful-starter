@@ -27,7 +27,7 @@ import { AtGuard } from '../common/guards';
 
 @Controller('tasks')
 @ApiTags('tasks')
-export class TaskController {
+export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Get()
