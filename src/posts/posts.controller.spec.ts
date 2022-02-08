@@ -60,7 +60,7 @@ describe('PostsController', () => {
       it('findOne should return all posts', async () => {
         const id = 1;
         const result : PostDto = {
-          id: 0,
+          id: 10,
           authorId: "",
           authorFirstName: "",
           authorLastName: "",
